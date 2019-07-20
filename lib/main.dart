@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:svg';
 
 import 'package:flutter_web/material.dart';
@@ -16,38 +17,50 @@ class MyApp extends StatelessWidget {
             title: Text('Calculator'),
           ),
           body: Container(
-            child: Calculator(),
+            child: Home(),
           ),
         ));
   }
 }
 
-class Calculator extends StatefulWidget {
+class Home extends StatefulWidget {
   @override
-  _CalculatorState createState() => _CalculatorState();
+  _HomeState createState() => _HomeState();
 }
 
-class _CalculatorState extends State<Calculator> {
-  String result = '0.0';
-  String _output;
+class _HomeState extends State<Home> {
+  String _display = '0';
+  bool userIsInTheMiddleOfTyping = false;
 
-  void operandPressed(int number) {
+  get displayValue => _display;
+  set displayValue(num newValue) => _display = newValue.toString();
+
+  void touchDigit(int digit) {
     setState(() {
-      result = number.toString();
+      if (userIsInTheMiddleOfTyping) {
+        String textCurrentlyInDisplay = _display;
+        _display = textCurrentlyInDisplay + digit.toString();
+      } else {
+        userIsInTheMiddleOfTyping = true;
+        _display = digit.toString();
+      }
     });
   }
 
-  void operatorPressed(String op) {
-    switch(op) {
-      case '+':
-        break;
-      case '-':
-        break;
-      case 'X':
-        break;
-      case '/':
-        break;
-    }
+  void performOperation(String mathematicalSymbol) {
+    setState(() {
+      userIsInTheMiddleOfTyping = false;
+      switch (mathematicalSymbol) {
+        case 'π':
+          displayValue = pi;
+          break;
+        case '√':
+          displayValue = sqrt(double.parse(displayValue));
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   @override
@@ -58,7 +71,7 @@ class _CalculatorState extends State<Calculator> {
           color: Colors.blueGrey.shade900,
           alignment: Alignment.topRight,
           child: Text(
-            result,
+            _display,
             style: TextStyle(
               fontSize: 50.0,
             ),
@@ -69,7 +82,7 @@ class _CalculatorState extends State<Calculator> {
             Button(
               buttonText: 'AC',
               color: Colors.blueGrey[800],
-              onButtonPressed: () {},
+              onButtonPressed: () {}
             ),
             Button(
               buttonText: '+/-',
@@ -91,16 +104,28 @@ class _CalculatorState extends State<Calculator> {
         Row(
           children: <Widget>[
             Button(
+              buttonText: 'π',
+              onButtonPressed: () {
+                performOperation('π');
+              }
+            ),
+            Button(
               buttonText: '7',
-              onButtonPressed: () { operandPressed(7); },
+              onButtonPressed: () {
+                touchDigit(7);
+              },
             ),
             Button(
               buttonText: '8',
-              onButtonPressed: () { operandPressed(8); },
+              onButtonPressed: () {
+                touchDigit(8);
+              },
             ),
             Button(
               buttonText: '9',
-              onButtonPressed: () { operandPressed(9); },
+              onButtonPressed: () {
+                touchDigit(9);
+              },
             ),
             Button(
               buttonText: 'X',
@@ -112,16 +137,28 @@ class _CalculatorState extends State<Calculator> {
         Row(
           children: <Widget>[
             Button(
+              buttonText: '√',
+              onButtonPressed: () {
+                performOperation('√');
+              }
+            ),
+            Button(
               buttonText: '4',
-              onButtonPressed: () { operandPressed(4); },
+              onButtonPressed: () {
+                touchDigit(4);
+              },
             ),
             Button(
               buttonText: '5',
-              onButtonPressed: () { operandPressed(5); },
+              onButtonPressed: () {
+                touchDigit(5);
+              },
             ),
             Button(
               buttonText: '6',
-              onButtonPressed: () { operandPressed(6); },
+              onButtonPressed: () {
+                touchDigit(6);
+              },
             ),
             Button(
               buttonText: '-',
@@ -133,16 +170,26 @@ class _CalculatorState extends State<Calculator> {
         Row(
           children: <Widget>[
             Button(
+              buttonText: '',
+              onButtonPressed: () {}
+            ),
+            Button(
               buttonText: '1',
-              onButtonPressed: () { operandPressed(1); },
+              onButtonPressed: () {
+                touchDigit(1);
+              },
             ),
             Button(
               buttonText: '2',
-              onButtonPressed: () { operandPressed(2); },
+              onButtonPressed: () {
+                touchDigit(2);
+              },
             ),
             Button(
               buttonText: '3',
-              onButtonPressed: () { operandPressed(3); },
+              onButtonPressed: () {
+                touchDigit(3);
+              },
             ),
             Button(
               buttonText: '+',
@@ -154,9 +201,15 @@ class _CalculatorState extends State<Calculator> {
         Row(
           children: <Widget>[
             Button(
+              buttonText: '',
+              onButtonPressed: () {}
+            ),
+            Button(
               buttonText: '0',
               flex: 2,
-              onButtonPressed: () { operandPressed(0); },
+              onButtonPressed: () {
+                touchDigit(0);
+              },
             ),
             Button(
               buttonText: '.',
