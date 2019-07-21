@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'dart:svg';
 
+import 'package:calculator/calculator_brain.dart';
 import 'package:flutter_web/material.dart';
 
 void main() => runApp(MyApp());
@@ -29,10 +29,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String _display = '0';
+  CalculatorBrain _brain = CalculatorBrain();
   bool userIsInTheMiddleOfTyping = false;
 
-  get displayValue => _display;
+  String _display = '0';
+  get displayValue => num.parse(_display);
   set displayValue(num newValue) => _display = newValue.toString();
 
   void touchDigit(int digit) {
@@ -49,16 +50,14 @@ class _HomeState extends State<Home> {
 
   void performOperation(String mathematicalSymbol) {
     setState(() {
-      userIsInTheMiddleOfTyping = false;
-      switch (mathematicalSymbol) {
-        case 'π':
-          displayValue = pi;
-          break;
-        case '√':
-          displayValue = sqrt(double.parse(displayValue));
-          break;
-        default:
-          break;
+      if(userIsInTheMiddleOfTyping) {
+        _brain.setOperand(displayValue);
+        userIsInTheMiddleOfTyping = false;
+      }
+
+      _brain.performOperation(mathematicalSymbol);
+      if(_brain.result != null) {
+        displayValue = _brain.result;
       }
     });
   }
@@ -170,8 +169,10 @@ class _HomeState extends State<Home> {
         Row(
           children: <Widget>[
             Button(
-              buttonText: '',
-              onButtonPressed: () {}
+              buttonText: 'cos',
+              onButtonPressed: () {
+                performOperation('cos');
+              }
             ),
             Button(
               buttonText: '1',
@@ -201,8 +202,10 @@ class _HomeState extends State<Home> {
         Row(
           children: <Widget>[
             Button(
-              buttonText: '',
-              onButtonPressed: () {}
+              buttonText: '±',
+              onButtonPressed: () {
+                performOperation('±');
+              }
             ),
             Button(
               buttonText: '0',
