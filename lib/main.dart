@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:calculator/calculator_brain.dart';
 import 'package:flutter_web/material.dart';
 
@@ -28,6 +26,7 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
+// TODO: fix UI so that first row of buttons is aligned with rest of buttons.
 class _HomeState extends State<Home> {
   CalculatorBrain _brain = CalculatorBrain();
   bool userIsInTheMiddleOfTyping = false;
@@ -94,9 +93,11 @@ class _HomeState extends State<Home> {
               onButtonPressed: () {},
             ),
             Button(
-              buttonText: '/',
+              buttonText: '÷',
               color: Colors.orange,
-              onButtonPressed: () {},
+              onButtonPressed: () {
+                performOperation('÷');
+              },
             ),
           ],
         ),
@@ -127,9 +128,11 @@ class _HomeState extends State<Home> {
               },
             ),
             Button(
-              buttonText: 'X',
+              buttonText: '×',
               color: Colors.orange,
-              onButtonPressed: () {},
+              onButtonPressed: () {
+                performOperation('×');
+              },
             ),
           ],
         ),
@@ -160,9 +163,11 @@ class _HomeState extends State<Home> {
               },
             ),
             Button(
-              buttonText: '-',
+              buttonText: '−',
               color: Colors.orange,
-              onButtonPressed: () {},
+              onButtonPressed: () {
+                performOperation('−');
+              },
             ),
           ],
         ),
@@ -195,7 +200,9 @@ class _HomeState extends State<Home> {
             Button(
               buttonText: '+',
               color: Colors.orange,
-              onButtonPressed: () {},
+              onButtonPressed: () {
+                performOperation('+');
+              },
             ),
           ],
         ),
@@ -221,7 +228,9 @@ class _HomeState extends State<Home> {
             Button(
               buttonText: '=',
               color: Colors.orange,
-              onButtonPressed: () {},
+              onButtonPressed: () {
+                performOperation('=');
+              },
             ),
           ],
         ),

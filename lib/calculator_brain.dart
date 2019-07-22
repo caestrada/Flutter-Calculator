@@ -9,6 +9,8 @@ import 'dart:math';
 class Operation {
   bool constant;
   bool unaryOperation;
+  bool binaryOperation;
+  bool equals;
   num value;
   Function func;
 
@@ -16,38 +18,94 @@ class Operation {
     this.value = value;
     constant = true;
     unaryOperation = false;
+    binaryOperation = false;
+    equals = false;
   }
 
   Operation.unaryOperation(Function func) {
     this.func = func;
     constant = false;
     unaryOperation = true;
+    binaryOperation = false;
+    equals = false;
+  }
+
+  Operation.binaryOperation(Function func) {
+    this.func = func;
+    constant = false;
+    unaryOperation = false;
+    binaryOperation = true;
+    equals = false;
+  }
+
+  Operation.equals() {
+    constant = false;
+    unaryOperation = false;
+    binaryOperation = false;
+    equals = true;
   }
 }
 
-num changeSign(num operand) => -operand;
+class PendingBinaryOperation {
+  Function function;
+  double firstOperand;
 
+  PendingBinaryOperation({ this.function, this.firstOperand });
+
+  num perform(num secondOperand) {
+    return function(firstOperand, secondOperand);
+  }
+}
+
+// TODO: Make AC, %, . functional.
 class CalculatorBrain {
   num _accumulator;
   get result => _accumulator;
+  PendingBinaryOperation _pendingBinaryOperation;
+
+  void _performPendingBinaryOperation() {
+    if( _pendingBinaryOperation != null && _accumulator != null) {
+      _accumulator = _pendingBinaryOperation.perform(_accumulator);
+      _pendingBinaryOperation = null;
+    }
+  }
 
   var operations = <String, Operation>{
-    'π':    Operation.constant(pi),                // pi
-    'e':    Operation.constant(e),                // e
-    'cos':  Operation.unaryOperation(cos),        // cos
-    '√':    Operation.unaryOperation(sqrt),        // sqrt
-    '±':    Operation.unaryOperation(changeSign),  // change sign
+    'π':    Operation.constant(pi),
+    'e':    Operation.constant(e),
+    'cos':  Operation.unaryOperation(cos),
+    '√':    Operation.unaryOperation(sqrt),
+    '±':    Operation.unaryOperation((op) => -op),
+    '×':    Operation.binaryOperation((op1, op2) => op1 * op2),
+    '÷':    Operation.binaryOperation((op1, op2) => op1 / op2),
+    '−':    Operation.binaryOperation((op1, op2) => op1 - op2),
+    '+':    Operation.binaryOperation((op1, op2) => op1 + op2),
+    '=':    Operation.equals(),
   };
 
   void performOperation(String symbol) {
-    if(operations.containsKey(symbol)) {
-      Operation operation = operations[symbol];
-      if(operation.constant) {
-        _accumulator = operation.value;
-      } 
-      else if(operation.unaryOperation) {
-        _accumulator = _accumulator != null ? operation.func(_accumulator) : _accumulator;
+    print('symbol $symbol');
+    if(!operations.containsKey(symbol)) { 
+      return; 
+    }
+
+    Operation operation = operations[symbol];
+    if(operation.constant) {
+      _accumulator = operation.value;
+    } 
+    else if(operation.unaryOperation) {
+      if(_accumulator != null) {
+        _accumulator = operation.func(_accumulator);
       }
+    }
+    else if(operation.binaryOperation) {
+      if(_accumulator != null) {
+        _pendingBinaryOperation = PendingBinaryOperation(function: operation.func, firstOperand: _accumulator);
+        _accumulator = null;
+      }
+    }
+    else if(operation.equals) {
+      _performPendingBinaryOperation();
     }
   }
 
